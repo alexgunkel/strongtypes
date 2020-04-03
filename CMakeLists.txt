@@ -3,7 +3,12 @@ project(shopping-list)
 
 set(CMAKE_CXX_STANDARD 17)
 
+enable_testing()
 add_subdirectory(test)
+add_test(
+        NAME unit-test
+        COMMAND tests
+)
 
 install(
         DIRECTORY ${PROJECT_SOURCE_DIR}/include/
