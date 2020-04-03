@@ -33,3 +33,24 @@ using MyType = Type<int, struct ParamMyType>;
 ```
 
 That's exactly what the macro does.
+
+## Convertible Strong Types
+
+You can use convertible type, i.e. strong types that are easily convertible to (and from) their basic types:
+
+### Explicitly Convertible
+The explicitly convertible type has a method to convert it explicitly to its base-type. Use:
+```
+CONVERTIBLE_STRONG_TYPE(MyInt, int);
+MyInt i{0};
+```
+to build an int-type you can easily cast back to an int with `int(i)`.
+The constructor is still marked explicit.
+
+### Implicitly Convertible
+The implicitly convertible type is what the name says. Use the following macro to create one:
+```
+IMPLICIT_STRONG_TYPE(MyInt, int);
+```
+Note that you lose many of the advantages of strong types with implicitly convertible types.
+Still, you keep the expressiveness.

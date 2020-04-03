@@ -55,3 +55,22 @@ EXPECT_EQ(orig, c1);
 EXPECT_EQ(orig, c2);
 EXPECT_EQ(orig, c3);
 }
+
+TEST(StrongTypesTest, testConversion) {
+    CONVERTIBLE_STRONG_TYPE(conversionTestExplicit, std::string);
+    IMPLICIT_STRONG_TYPE(conversionTestImplicit, std::string);
+
+    conversionTestExplicit a{"foo"};
+    conversionTestImplicit b{"bar"};
+
+    auto cmpStrings = [](const std::string& wanted, const std::string& got) {
+        EXPECT_EQ(wanted, got);
+    };
+
+    EXPECT_EQ("foo", std::string(a));
+    cmpStrings("bar", b);
+
+    std::string s = "foobar";
+    conversionTestImplicit c = s;
+    cmpStrings(s, c);
+}

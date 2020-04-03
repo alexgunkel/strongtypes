@@ -3,21 +3,47 @@
 
 #include <ostream>
 
-template <typename T, typename P>
+enum ConversionType {
+    None,
+    Explicit,
+    Implicit
+};
+
+template <typename T, typename P, ConversionType CONVERSION = None>
 class Type {
     T obj;
 public:
     Type() = default;
+
+    template<ConversionType USE = CONVERSION, std::enable_if_t<USE != Implicit, int> = 0>
     explicit Type(const T&& o): obj{o} {};
+
+    template<ConversionType USE = CONVERSION, std::enable_if_t<USE == Implicit, int> = 0>
+    Type(const T&& o): obj{o} {};
+
+    template<ConversionType USE = CONVERSION, std::enable_if_t<USE != Implicit, int> = 0>
     explicit Type(const T& o): obj{o} {};
 
-    Type<T, P> &operator=(const Type<T, P> &other) {
+    template<ConversionType USE = CONVERSION, std::enable_if_t<USE == Implicit, int> = 0>
+    Type(const T& o): obj{o} {};
+
+    Type& operator=(const Type<T, P> &other) {
         if (&other == this) {
             return *this;
         }
 
         obj = other.obj;
         return *this;
+    };
+
+    template<ConversionType USE = CONVERSION, std::enable_if_t<USE == Explicit, int> = 0>
+    explicit operator T() const {
+        return obj;
+    };
+
+    template<ConversionType USE = CONVERSION, std::enable_if_t<USE == Implicit, int> = 0>
+    operator T() const {
+        return obj;
     };
 
     inline const T &get() const {
@@ -59,5 +85,7 @@ public:
 };
 
 #define STRONG_TYPE(name, type) using name = Type<type, struct Type##name>;
+#define CONVERTIBLE_STRONG_TYPE(name, type) using name = Type<type, struct Type##name, Explicit>;
+#define IMPLICIT_STRONG_TYPE(name, type) using name = Type<type, struct Type##name, Implicit>;
 
 #endif //LIST_STRONG_TYPES_H
