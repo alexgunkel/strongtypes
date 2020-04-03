@@ -75,7 +75,7 @@ public:
     }
 
     friend std::ostream &operator<<(std::ostream &os, const Type &type) {
-        os << "obj: " << type.obj;
+        os << type.obj;
         return os;
     }
 
