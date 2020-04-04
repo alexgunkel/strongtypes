@@ -1,19 +1,26 @@
-include(ExternalProject)
-set(EXTERNAL_INSTALL_LOCATION ${PROJECT_SOURCE_DIR}/external)
+include(FetchContent)
 
-ExternalProject_Add(googletest_ep
-        GIT_REPOSITORY https://github.com/google/googletest
-        GIT_TAG 78fdd6c00b8fa5dd67066fbb796affc87ba0e075
-        GIT_PROGRESS true
-        CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION} -DCMAKE_INSTALL_LIBDIR=lib64 -DCMAKE_CXX_FLAGS="-w"
-        )
+# Fetch GoogleTest
+FetchContent_Declare(
+        googletest
+        GIT_REPOSITORY https://github.com/google/googletest.git
+        GIT_TAG v1.16.0
+        OVERRIDE_FIND_PACKAGE
+        EXCLUDE_FROM_ALL
+)
 
-link_directories(${EXTERNAL_INSTALL_LOCATION}/lib64)
+enable_testing()
+
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+
+FetchContent_MakeAvailable(googletest)
 
 file(GLOB test-sources "*_test.cpp")
 
-add_executable(tests "")
-target_sources(tests PRIVATE test_main.cpp ${test-sources})
-target_include_directories(tests PRIVATE ${PROJECT_SOURCE_DIR}/include ${EXTERNAL_INSTALL_LOCATION}/include)
-target_link_libraries(tests PRIVATE gtest pthread)
-add_dependencies(tests googletest_ep)
+add_executable(tests "${test-sources}")
+target_link_libraries(tests gtest_main pthread StrongTypes)
+
+add_test(
+        NAME unit-test
+        COMMAND tests
+)
