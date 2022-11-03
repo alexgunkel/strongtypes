@@ -57,8 +57,8 @@ TEST(StrongTypesTest, testConstructors) {
 }
 
 TEST(StrongTypesTest, testConversion) {
-    CONVERTIBLE_STRONG_TYPE(conversionTestExplicit, std::string);
-    IMPLICIT_STRONG_TYPE(conversionTestImplicit, std::string);
+    CONVERTIBLE_STRONG_TYPE(conversionTestExplicit, std::string)
+    IMPLICIT_STRONG_TYPE(conversionTestImplicit, std::string)
 
     conversionTestExplicit a{"foo"};
     conversionTestImplicit b{"bar"};
@@ -76,7 +76,7 @@ TEST(StrongTypesTest, testConversion) {
 }
 
 TEST(StrongTypesTest, constexprConstructable) {
-    STRONG_TYPE(constExprTester, int);
+    STRONG_TYPE(constExprTester, int)
 
     constexpr constExprTester t{2};
 }

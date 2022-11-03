@@ -4,13 +4,13 @@
 #include <ostream>
 
 namespace strong_types {
-    enum ConversionType {
+    enum class ConversionType {
         None,
         Explicit,
         Implicit
     };
 
-    template<typename T, typename P, ConversionType CONVERSION = None>
+    template<typename T, typename P, ConversionType CONVERSION = ConversionType::None>
     class Type {
         T obj;
     public:
@@ -18,16 +18,16 @@ namespace strong_types {
 
         Type(const Type &other) = default;
 
-        template<ConversionType USE = CONVERSION, std::enable_if_t<USE != Implicit, int> = 0>
+        template<ConversionType USE = CONVERSION, std::enable_if_t<USE != ConversionType::Implicit, int> = 0>
         constexpr explicit Type(const T &&o) noexcept : obj{o} {};
 
-        template<ConversionType USE = CONVERSION, std::enable_if_t<USE == Implicit, int> = 0>
+        template<ConversionType USE = CONVERSION, std::enable_if_t<USE == ConversionType::Implicit, int> = 0>
         constexpr Type(const T &&o) noexcept : obj{o} {};
 
-        template<ConversionType USE = CONVERSION, std::enable_if_t<USE != Implicit, int> = 0>
+        template<ConversionType USE = CONVERSION, std::enable_if_t<USE != ConversionType::Implicit, int> = 0>
         constexpr explicit Type(const T &o) noexcept : obj{o} {};
 
-        template<ConversionType USE = CONVERSION, std::enable_if_t<USE == Implicit, int> = 0>
+        template<ConversionType USE = CONVERSION, std::enable_if_t<USE == ConversionType::Implicit, int> = 0>
         constexpr Type(const T &o) noexcept : obj{o} {};
 
         Type &operator=(const Type<T, P> &other) noexcept {
@@ -39,12 +39,12 @@ namespace strong_types {
             return *this;
         };
 
-        template<ConversionType USE = CONVERSION, std::enable_if_t<USE == Explicit, int> = 0>
+        template<ConversionType USE = CONVERSION, std::enable_if_t<USE == ConversionType::Explicit, int> = 0>
         explicit operator T() const noexcept {
             return obj;
         };
 
-        template<ConversionType USE = CONVERSION, std::enable_if_t<USE == Implicit, int> = 0>
+        template<ConversionType USE = CONVERSION, std::enable_if_t<USE == ConversionType::Implicit, int> = 0>
         operator T() const noexcept {
             return obj;
         };
@@ -91,7 +91,7 @@ namespace strong_types {
             return Type<T, P>{obj + other.obj};
         };
 
-        template <class Integer, std::enable_if_t< std::is_integral<Integer>::value>* = nullptr >
+        template <class Integer, std::enable_if_t< std::is_integral_v<Integer>>* = nullptr >
         friend constexpr Type<T, P> operator*(const Type<T, P> &left, const Integer &right) {
             auto result = left;
             for (Integer i = 1; i < right; ++i) {
@@ -101,7 +101,7 @@ namespace strong_types {
             return result;
         };
 
-        template <class Integer, std::enable_if_t< std::is_integral<Integer>::value>* = nullptr >
+        template <class Integer, std::enable_if_t< std::is_integral_v<Integer>>* = nullptr >
         friend constexpr Type<T, P> operator*(const Integer &left, const Type<T, P> &right) {
             auto result = right;
             for (Integer i = 1; i < left; ++i) {
@@ -113,13 +113,13 @@ namespace strong_types {
     };
 
     template<class S, class T, class ... Args>
-    static constexpr S emplace(Args... args) {
+    static constexpr S emplace(Args&&... args) {
         return S(T(std::forward<Args>(args) ...));
     };
 } // namespace strong_types
 
 #define STRONG_TYPE(name, type) using name = ::strong_types::Type<type, struct Type##name>;
-#define CONVERTIBLE_STRONG_TYPE(name, type) using name = ::strong_types::Type<type, struct Type##name, strong_types::Explicit>;
-#define IMPLICIT_STRONG_TYPE(name, type) using name = ::strong_types::Type<type, struct Type##name, strong_types::Implicit>;
+#define CONVERTIBLE_STRONG_TYPE(name, type) using name = ::strong_types::Type<type, struct Type##name, strong_types::ConversionType::Explicit>;
+#define IMPLICIT_STRONG_TYPE(name, type) using name = ::strong_types::Type<type, struct Type##name, strong_types::ConversionType::Implicit>;
 
 #endif //LIST_STRONG_TYPES_H
