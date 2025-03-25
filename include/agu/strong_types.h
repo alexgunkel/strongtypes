@@ -3,7 +3,7 @@
 
 #include <ostream>
 
-namespace strong_types {
+namespace agu {
     enum class ConversionType {
         None,
         Explicit,
@@ -116,10 +116,10 @@ namespace strong_types {
     static constexpr S emplace(Args&&... args) {
         return S(T(std::forward<Args>(args) ...));
     };
-} // namespace strong_types
+}
 
-#define STRONG_TYPE(name, type) using name = ::strong_types::Type<type, struct Type##name>;
-#define CONVERTIBLE_STRONG_TYPE(name, type) using name = ::strong_types::Type<type, struct Type##name, strong_types::ConversionType::Explicit>;
-#define IMPLICIT_STRONG_TYPE(name, type) using name = ::strong_types::Type<type, struct Type##name, strong_types::ConversionType::Implicit>;
+#define STRONG_TYPE(name, type) using name = ::agu::Type<type, struct Type##name>;
+#define CONVERTIBLE_STRONG_TYPE(name, type) using name = ::agu::Type<type, struct Type##name, ::agu::ConversionType::Explicit>;
+#define IMPLICIT_STRONG_TYPE(name, type) using name = ::agu::Type<type, struct Type##name, ::agu::ConversionType::Implicit>;
 
-#endif //LIST_STRONG_TYPES_H
+#endif

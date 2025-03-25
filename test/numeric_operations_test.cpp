@@ -1,15 +1,15 @@
-#include "strong_types.h"
+#include <agu/strong_types.h>
 
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 #include <string>
 
 TEST(NumericOperations, arithmetics) {
     STRONG_TYPE(meter, int);
 
-    meter a{5};
-    meter b{4};
-    char c{3};
-    long d{100};
+    constexpr meter a{5};
+    constexpr meter b{4};
+    constexpr char c{3};
+    constexpr long d{100};
 
     EXPECT_EQ(meter{9}, a + b);
     EXPECT_EQ(meter{15}, a * c);
